@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def homepage():
-    return "Hello, Flask!"
+    return render_template("index.html")
 
 @app.route("/add", methods=["GET", "POST"])
 def add_expense():
