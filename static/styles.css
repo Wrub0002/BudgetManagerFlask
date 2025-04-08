@@ -100,3 +100,19 @@ footer {
     font-size: 0.9rem;
     color: #666;
 }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left; /* ou 'center' se preferir centralizar tudo */
+  }
+
+  th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;  /* garante que os valores fiquem alinhados com os cabeçalhos */
+  }
+
+  th {
+    font-weight: bold;
+  }
+</style>
