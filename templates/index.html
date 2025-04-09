@@ -18,26 +18,42 @@
 </header>
 <main>
     <h2>Dashboard</h2>
-    <button onclick="toggleForm()">+ Add Expense</button>
+    <!-- Add Expense -->
+    <button onclick="toggleExpenseForm()">+ Add Expense</button>
     <div id="expense-form" style="display: none;">
         <form method="POST">
+            <input type="hidden" name="type" value="expense">
             <input type="date" name="date">
             <input type="text" name="description" placeholder="Description">
             <input type="number" step="0.01" name="amount" required>
             <button type="submit">Add</button>
         </form>
     </div>
+
+    <!-- Add Income -->
+    <button onclick="toggleIncomeForm()">+ Add Income</button>
+    <div id="income-form" style="display: none;">
+        <form method="POST">
+            <input type="hidden" name="type" value="income">
+            <input type="date" name="date">
+            <input type="text" name="source" placeholder="Source">
+            <input type="number" step="0.01" name="amount" required>
+            <button type="submit">Add</button>
+        </form>
+    </div>
+
+    <!-- Scripts -->
     <script>
-        function toggleForm() {
+        function toggleExpenseForm() {
             const form = document.getElementById('expense-form');
-            if (form.style.display === 'none' || form.style.display === '') {
-                form.style.display = 'block';
-            } else {
-                form.style.display = 'none';
-            }
+            form.style.display = form.style.display === 'none' || form.style.display === '' ? 'block' : 'none';
+        }
+
+        function toggleIncomeForm() {
+            const form = document.getElementById('income-form');
+            form.style.display = form.style.display === 'none' || form.style.display === '' ? 'block' : 'none';
         }
     </script>
-
     <div class="dashboard-container">
         <div class="card">
             <h2>Recent Expenses</h2>
@@ -60,11 +76,22 @@
                 </tbody>
             </table>
             <h3>Income</h3>
-            <ul>
-                <li>His Paycheck 1: $1,500.00</li>
-                <li>Her Paycheck 1: $1,500.00</li>
-                <li>Side Hustle: $500.00</li>
-            </ul>
+            <table>
+                <thead>
+                <tr>
+                    <th>Source</th>
+                    <th>Amount</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for income in latest_income %}
+                <tr>
+                    <td>{{ income.source }}</td>
+                    <td>${{ income.amount }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
             <h3>Total Income: $6,500.00</h3>
             <h3>Expenses</h3>
             <ul>

@@ -5,22 +5,32 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
 def homepage():
+
+    # Add Expenses
     if request.method == "POST":
-        date = request.form["date"]
-        description = request.form["description"].capitalize()
-        amount = request.form["amount"]
+        form_type = request.form["type"]
 
-        with open("expenses.txt", "a") as file:
-            file.write(f"{date} | {description} | {amount}$\n")
+        if form_type == "expense":
+            date = request.form["date"]
+            amount = request.form["amount"]
+            description = request.form["description"].capitalize()
+            with open("expenses.txt", "a") as file:
+                file.write(f"{date} | {description} | {amount}$\n")
 
+        elif form_type == "income":
+            date = request.form["date"]
+            source = request.form["source"].capitalize()
+            amount = request.form["amount"]
+            with open("income.txt", "a") as file:
+                file.write(f"{date} | {source} | {amount}$\n")
+
+    # Recent Expenses
     latest_expenses = []
 
-    # Read the last three lines from the expenses file
     with open("expenses.txt", "r") as file:
         lines = file.readlines()
         last_three = lines[-3:]
 
-        # Process the last three lines to extract date, description, and amount
         for line in last_three:
             parts = line.strip().split(" | ")
             if len(parts) == 3:
@@ -32,6 +42,7 @@ def homepage():
                     "description": description,
                     "amount": amount
                 })
+
 
     return render_template("index.html", latest_expenses=latest_expenses)
 
