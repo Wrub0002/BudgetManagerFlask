@@ -8,20 +8,23 @@ def homepage():
     # Add expense
     if request.method == "POST":
         form_type = request.form["type"]
+        date = request.form["date"]
+        amount = request.form["amount"]
+        description = request.form.get("description", "")
+        source = request.form.get("source", "")
+
+
+        if not date or not amount or (form_type == "expense" and not description) or (
+                form_type == "income" and not source):
+            return "❌ All fields are required!"
 
         if form_type == "expense":
-            date = request.form["date"]
-            amount = request.form["amount"]
-            description = request.form["description"].capitalize()
             with open("expenses.txt", "a") as file:
-                file.write(f"{date} | {description} | {amount}$\n")
-        # Add income
+                file.write(f"{date} | {description.capitalize()} | {amount}$\n")
+
         elif form_type == "income":
-            date = request.form["date"]
-            source = request.form["source"].capitalize()
-            amount = request.form["amount"]
             with open("income.txt", "a") as file:
-                file.write(f"{date} | {source} | {amount}$\n")
+                file.write(f"{date} | {source.capitalize()} | {amount}$\n")
 
     # Show latest income
     latest_income = []
