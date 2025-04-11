@@ -1,6 +1,15 @@
 from flask import Flask, request, render_template
+from db import db
+from models import Expense, Income
 
 app = Flask(__name__)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///budget.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db.init_app(app)
+with app.app_context():
+    db.create_all()
 
 @app.route("/", methods=["GET", "POST"])
 def homepage():
@@ -12,7 +21,6 @@ def homepage():
         amount = request.form["amount"]
         description = request.form.get("description", "")
         source = request.form.get("source", "")
-
 
         if not date or not amount or (form_type == "expense" and not description) or (
                 form_type == "income" and not source):

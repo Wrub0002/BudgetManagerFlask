@@ -103,13 +103,13 @@ footer {
   table {
     width: 100%;
     border-collapse: collapse;
-    text-align: left; /* ou 'center' se preferir centralizar tudo */
+    text-align: left;
   }
 
   th, td {
     padding: 10px;
     border-bottom: 1px solid #ddd;
-    text-align: left;  /* garante que os valores fiquem alinhados com os cabeçalhos */
+    text-align: left;
   }
 
   th {
