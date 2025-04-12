@@ -1,13 +1,9 @@
-from flask import Flask, request, render_template
-from db import db
-from models import Expense, Income
+from flask import request,render_template
+from app.__init__ import create_app, db
+from app.models import Expense, Income
 
-app = Flask(__name__)
+app = create_app()
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///budget.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db.init_app(app)
 with app.app_context():
     db.create_all()
 
