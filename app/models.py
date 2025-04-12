@@ -1,5 +1,7 @@
-from db import db
+from __init__ import db
+from datetime import date
 
+# Expense table to store user expense records
 class Expense(db.Model):
     __tablename__ = "expenses"
     id = db.Column(db.Integer, primary_key=True)
@@ -11,6 +13,7 @@ class Expense(db.Model):
         return f"<Expense {self.description} - {self.amount} on {self.date}>"
 
 
+# Income table to store user income sources
 class  Income(db.Model):
     __tablename__ = "income"
     id = db.Column(db.Integer, primary_key=True)

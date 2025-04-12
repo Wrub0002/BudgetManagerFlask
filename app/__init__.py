@@ -7,10 +7,11 @@ db = SQLAlchemy()
 # Create a Flask app instance
 def create_app():
     """
-       Application factory function.
+    Flask application factory.
 
-       Creates and configures the Flask application instance.
-       """
+    Initializes the app, configures the database,
+    and returns the app instance.
+    """
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///budget.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
