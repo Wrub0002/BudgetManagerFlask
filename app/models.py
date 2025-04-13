@@ -1,5 +1,4 @@
-from __init__ import db
-from datetime import date
+from app import db
 
 # Expense table to store user expense records
 class Expense(db.Model):

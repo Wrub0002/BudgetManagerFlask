@@ -1,15 +1,18 @@
 from flask import Blueprint, request, render_template
+from app import db
+from app.models import Expense, Income
+from datetime import datetime
+
 
 # Create a Blueprint for the routes
 routes = Blueprint("routes", __name__)
-
 
 @routes.route("/", methods=["GET", "POST"])
 def homepage():
     # Add expense
     if request.method == "POST":
         form_type = request.form["type"]
-        date = request.form["date"]
+        date = datetime.strptime(request.form["date"], "%Y-%m-%d").date()
         amount = request.form["amount"]
         description = request.form.get("description", "")
         source = request.form.get("source", "")
@@ -19,44 +22,16 @@ def homepage():
             return "❌ All fields are required!"
 
         if form_type == "expense":
-            with open("expenses.txt", "a") as file:
-                file.write(f"{date} | {description.capitalize()} | {amount}$\n")
+            new_expense = Expense(date=date, description = description.capitalize(), amount=amount)
+            db.session.add(new_expense)
+            db.session.commit()
         elif form_type == "income":
-            with open("income.txt", "a") as file:
-                file.write(f"{date} | {source.capitalize()} | {amount}$\n")
+            new_income = Income(date=date, source=source.capitalize(), amount=amount)
+            db.session.add(new_income)
+            db.session.commit()
 
-    # Show latest income
-    latest_income = []
-    try:
-        with open("income.txt", "r") as file:
-            lines = file.readlines()
-            last_three = lines[-3:]
-            for line in last_three:
-                parts = line.strip().split(" | ")
-                if len(parts) == 3:
-                    latest_income.append({
-                        "date": parts[0],
-                        "source": parts[1],
-                        "amount": parts[2].replace("$", "")
-                    })
-    except FileNotFoundError:
-        pass
+    latest_expenses = Expense.query.order_by(Expense.date.desc()).limit(5).all()
 
-    # Show latest expenses
-    latest_expenses = []
-    try:
-        with open("expenses.txt", "r") as file:
-            lines = file.readlines()
-            last_three = lines[-3:]
-            for line in last_three:
-                parts = line.strip().split(" | ")
-                if len(parts) == 3:
-                    latest_expenses.append({
-                        "date": parts[0],
-                        "description": parts[1],
-                        "amount": parts[2].replace("$", "")
-                    })
-    except FileNotFoundError:
-        pass
+    latest_income = Income.query.order_by(Income.date.desc()).limit(5).all()
 
     return render_template("index.html", latest_expenses=latest_expenses, latest_income=latest_income )
