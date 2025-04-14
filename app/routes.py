@@ -1,8 +1,11 @@
+from calendar import month
+from traceback import extract_tb
+
 from flask import Blueprint, request, render_template
 from app import db
 from app.models import Expense, Income
 from datetime import datetime
-from sqlalchemy import func
+from sqlalchemy import extract
 
 
 # Create a Blueprint for the routes
@@ -10,7 +13,17 @@ routes = Blueprint("routes", __name__)
 
 @routes.route("/", methods=["GET", "POST"])
 def homepage():
+    # receive month and year from the request
+    month = request.args.get("month", default=datetime.now().month, type=int)
+    year = request.args.get("year", default=datetime.now().year, type=int)
 
+    # Validate month and year
+    if month < 1 or month > 12:
+        month = 12
+        year -= 1
+    elif month > 12:
+        month = 1
+        year += 1
 
     if request.method == "POST":
         form_type = request.form["type"]
@@ -32,19 +45,21 @@ def homepage():
             db.session.add(new_income)
             db.session.commit()
 
-    # Fetch the latest 5 expenses and income records
-    latest_expenses = Expense.query.order_by(Expense.date.desc()).limit(5).all()
+    month_expenses = Expense.query.filter(
+        extract('month', Expense.date) == month,
+        extract('year', Expense.date) == year
+    ).all()
 
-    # Fetch the latest 5 income records
-    latest_income = Income.query.order_by(Income.date.desc()).limit(5).all()
+    month_income = Income.query.filter(
+        extract('month', Income.date) == month,
+        extract('year', Income.date) == year
+    ).all()
 
-    # Calculate the total income
-    total_income = db.session.query(func.sum(Income.amount)).scalar() or 0
-
-    # Calculate the total expenses
-    total_expenses = db.session.query(func.sum(Expense.amount)).scalar() or 0
-
-    # Calculate the balance
+    # Calculate the total income for the current month
+    total_income = sum(i.amount for i in month_income)
+    total_expenses = sum(e.amount for e in month_expenses)
     balance = total_income - total_expenses
 
-    return render_template("index.html", latest_expenses=latest_expenses, latest_income=latest_income, total_income=total_income, total_expenses=total_expenses, balance=balance)
+
+    return render_template("index.html",total_income=total_income, total_expenses=total_expenses, balance=balance
+                           , month_expenses=month_expenses, month_income=month_income, selected_month=month, selected_year=year, selected_month_name=datetime(year, month, 1).strftime("%B"))

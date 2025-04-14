@@ -10,9 +10,20 @@
 <header>
     <h1>Welcome,</h1>
     <div>
-        <button>&lt;</button>
-        <span>April, 2025</span>
-        <button>&gt;</button>
+        <form method="GET" style="display: inline;">
+            <input type="hidden" name="month" value="{{ selected_month - 1 }}">
+            <input type="hidden" name="year" value="{{ selected_year }}">
+            <button type="submit">&lt;</button>
+        </form>
+
+        <span>{{ selected_month_name }}, {{ selected_year }}</span>
+
+        <form method="GET" style="display: inline;">
+            <input type="hidden" name="month" value="{{ selected_month + 1 }}">
+            <input type="hidden" name="year" value="{{ selected_year }}">
+            <button type="submit">&gt;</button>
+        </form>
+
         <button>Logout</button>
     </div>
 </header>
@@ -66,7 +77,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for expense in latest_expenses %}
+                {% for expense in month_expenses %}
                 <tr>
                     <td>{{ expense.date }}</td>
                     <td>{{ expense.description }}</td>
@@ -86,7 +97,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for income in latest_income %}
+                {% for income in month_income %}
                 <tr>
                     <td>{{ income.date }}</td>
                     <td>{{ income.source }}</td>
