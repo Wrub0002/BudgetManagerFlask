@@ -1,7 +1,7 @@
 from calendar import month
 from traceback import extract_tb
 
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, render_template, redirect
 from app import db
 from app.models import Expense, Income
 from datetime import datetime
@@ -10,6 +10,21 @@ from sqlalchemy import extract
 
 # Create a Blueprint for the routes
 routes = Blueprint("routes", __name__)
+
+@routes.route("/delete/expense/<int:id>", methods=["POST"])
+def delete_expense(id):
+    expense = Expense.query.get_or_404(id)
+    db.session.delete(expense)
+    db.session.commit()
+    return redirect("/")
+
+@routes.route("/delete/income/<int:id>", methods=["POST"])
+def delete_income(id):
+    income = Income.query.get_or_404(id)
+    db.session.delete(income)
+    db.session.commit()
+    return redirect("/")
+
 
 @routes.route("/", methods=["GET", "POST"])
 def homepage():
