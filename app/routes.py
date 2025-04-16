@@ -75,4 +75,5 @@ def homepage():
 
 
     return render_template("index.html",total_income=total_income, total_expenses=total_expenses, balance=balance
-                           , month_expenses=month_expenses, month_income=month_income, selected_month=month, selected_year=year, selected_month_name=datetime(year, month, 1).strftime("%B"))
+                           , month_expenses=month_expenses, month_income=month_income, selected_month=month, selected_year=year, selected_month_name=datetime(year, month, 1).strftime("%B"),
+                           current_user=current_user)
