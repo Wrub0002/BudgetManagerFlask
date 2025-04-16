@@ -19,7 +19,7 @@ def login():
             flash("✅ Login successful!", category="success")
             return redirect(url_for("routes.homepage"))
         else:
-            flash("❌ Invalid username or password", category="error")
+            flash("❌ Invalid username or password", category="danger")
             return redirect(url_for("auth.login"))
 
     return render_template("login.html")

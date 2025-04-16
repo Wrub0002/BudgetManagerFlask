@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, redirect
+from flask import Blueprint, request, render_template, redirect, flash
 from app import db
 from app.models import Expense, Income
 from datetime import datetime
@@ -47,7 +47,8 @@ def homepage():
 
         if not date or not amount or (form_type == "expense" and not description) or (
                 form_type == "income" and not source):
-            return "❌ All fields are required!"
+            flash("❌ All fields are required!", category="warning")
+            return redirect("/")
 
         if form_type == "expense":
             new_expense = Expense(date=date, description = description.capitalize(), amount=amount, user_id=current_user.id)
@@ -72,7 +73,6 @@ def homepage():
     total_income = sum(i.amount for i in month_income)
     total_expenses = sum(e.amount for e in month_expenses)
     balance = total_income - total_expenses
-
 
     return render_template("index.html",total_income=total_income, total_expenses=total_expenses, balance=balance
                            , month_expenses=month_expenses, month_income=month_income, selected_month=month, selected_year=year, selected_month_name=datetime(year, month, 1).strftime("%B"),
