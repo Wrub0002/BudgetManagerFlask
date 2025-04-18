@@ -11,21 +11,28 @@ auth = Blueprint("auth", __name__)
 
 @auth.route("/login", methods=["GET", "POST"])
 def login():
+    errors = {}
+
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
 
         user = User.query.filter_by(username=username).first()
 
-        if user and check_password_hash(user.password_hash, password):
-            login_user(user)
-            flash("✅ Login successful!", category="success")
-            return redirect(url_for("routes.homepage"))
-        else:
-            flash("❌ Invalid username or password", category="danger")
-            return redirect(url_for("auth.login"))
+        if not user:
+            errors["username"] = "Username not found"
+        elif not check_password_hash(user.password_hash, password):
+            errors["password"] = "Incorrect password"
 
-    return render_template("login.html")
+        if errors:
+            return render_template("login.html", errors=errors, username=username)
+
+        login_user(user)
+        flash("✅ Login successful!", category="success")
+        return redirect(url_for("routes.homepage"))
+
+    return render_template("login.html", errors={})
+
 
 @auth.route("/logout")
 def logout():
