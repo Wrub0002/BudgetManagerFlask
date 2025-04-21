@@ -9,6 +9,7 @@ class Expense(db.Model):
     date = db.Column(db.Date, nullable=False)
     description = db.Column(db.String(100), nullable=False)
     amount = db.Column(db.Float, nullable=False)
+    category = db.Column(db.String(50), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     def __repr__(self):
@@ -22,6 +23,7 @@ class Income(db.Model):
     date = db.Column(db.Date, nullable=False)
     source = db.Column(db.String(100), nullable=False)
     amount = db.Column(db.Float, nullable=False)
+    category = db.Column(db.String(50), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     def __repr__(self):

@@ -26,6 +26,8 @@ def delete_income(id):
 @routes.route("/", methods=["GET", "POST"])
 @login_required
 def homepage():
+
+
     # receive month and year from the request
     month = request.args.get("month", default=datetime.now().month, type=int)
     year = request.args.get("year", default=datetime.now().year, type=int)
@@ -44,6 +46,7 @@ def homepage():
         amount = request.form["amount"]
         description = request.form.get("description", "")
         source = request.form.get("source", "")
+        category = request.form.get("category")
 
         if not date or not amount or (form_type == "expense" and not description) or (
                 form_type == "income" and not source):
@@ -51,14 +54,34 @@ def homepage():
             return redirect("/")
 
         if form_type == "expense":
-            new_expense = Expense(date=date, description = description.capitalize(), amount=amount, user_id=current_user.id)
+            new_expense = Expense(date=date, description = description.capitalize(), amount=amount, category=category,user_id=current_user.id)
             db.session.add(new_expense)
             db.session.commit()
         elif form_type == "income":
-            new_income = Income(date=date, source=source.capitalize(), amount=amount, user_id=current_user.id)
+            new_income = Income(date=date, source=source.capitalize(), amount=amount, category=category, user_id=current_user.id)
             db.session.add(new_income)
             db.session.commit()
 
+    category_emojis = {
+        "Food": "🍔",
+        "Transport": "🚌",
+        "Housing": "🏠",
+        "Entertainment": "🎮",
+        "Healthcare": "💊",
+        "Clothing": "👕",
+        "Education": "🎓",
+        "Subscriptions": "📦",
+        "Other": "❓",
+        "Salary": "💼",
+        "Investment": "📈",
+        "Gift": "🎁",
+        "Side Job": "🛠️",
+        "Rental": "🏘️",
+        "Interest": "💵",
+        "Dividends": "📊",
+        "Bonus": "💰",
+        "Freelance": "🧑‍💻"
+    }
     month_expenses = Expense.query.filter_by(user_id=current_user.id).filter(
         extract('month', Expense.date) == month,
         extract('year', Expense.date) == year
@@ -74,6 +97,8 @@ def homepage():
     total_expenses = sum(e.amount for e in month_expenses)
     balance = total_income - total_expenses
 
+
+
     return render_template("index.html",total_income=total_income, total_expenses=total_expenses, balance=balance
                            , month_expenses=month_expenses, month_income=month_income, selected_month=month, selected_year=year, selected_month_name=datetime(year, month, 1).strftime("%B"),
-                           current_user=current_user)
+                           current_user=current_user, category_emojis= category_emojis)

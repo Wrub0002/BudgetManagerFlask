@@ -4,24 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Budget Tracker Dashboard</title>
-
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="static/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="{{ url_for('static', filename='flash.js') }}"></script>
-
 </head>
 <body>
 {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    {% for category, message in messages %}
-      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    {% endfor %}
-  {% endif %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+{% endif %}
 {% endwith %}
 <header class="bg-light py-3 border-bottom">
     <div class="container">
@@ -69,11 +66,28 @@
                 </div>
                 <div class="col-md-5">
                     <label for="description" class="form-label">Description</label>
-                    <input type="text" name="description" id="description" class="form-control" placeholder="Description">
+                    <input type="text" name="description" id="description" class="form-control"
+                           placeholder="Description">
                 </div>
                 <div class="col-md-3">
                     <label for="amount" class="form-label">Amount</label>
                     <input type="number" step="0.01" name="amount" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label for="expense-category" class="form-label">Category</label>
+                    <select name="category" id="expense-category" class="form-select" required>
+                        <option value="">Select</option>
+                        <option value="Food">🍔 Food</option>
+                        <option value="Transport">🚌 Transport</option>
+                        <option value="Housing">🏠 Housing</option>
+                        <option value="Entertainment">🎮 Entertainment</option>
+                        <option value="Healthcare">💊 Healthcare</option>
+                        <option value="Clothing">👕 Shopping</option>
+                        <option value="Education">🎓 Education</option>
+                        <option value="Subscriptions">📦 Subscriptions</option>
+                        <option value="Other">❓ Other</option>
+
+                    </select>
                 </div>
             </div>
             <button type="submit" class="btn btn-primary">Add Expense</button>
@@ -85,6 +99,7 @@
         + Add Income
     </button>
     <div id="income-form" class="collapse mb-3">
+
         <form method="POST" class="border rounded p-3 mb-4">
             <input type="hidden" name="type" value="income">
             <div class="row mb-3">
@@ -94,110 +109,129 @@
                 </div>
                 <div class="col-md-5">
                     <label for="source" class="form-label">Source</label>
-                    <input type="text" name="source"  id="source" class="form-control" placeholder="Source">
+                    <input type="text" name="source" id="source" class="form-control" placeholder="Source">
                 </div>
                 <div class="col-md-3">
                     <label for="amount" class="form-label">Amount</label>
                     <input type="number" step="0.01" id="amount" name="amount" class="form-control" required>
                 </div>
+                <div class="col-md-4">
+                    <label for="income-category" class="form-label">Category</label>
+                    <select name="category" id="income-category" class="form-select" required>
+                        <option value="">Select</option>
+                        <option value="Salary">💼 Salary</option>
+                        <option value="Investment">📈 Investment</option>
+                        <option value="Gift">🎁 Gift</option>
+                        <option value="Side Job">🛠️ Side Job</option>
+                        <option value="Rental">🏘️ Rental</option>
+                        <option value="Interest">💵 Interest</option>
+                        <option value="Dividends">📊 Dividends</option>
+                        <option value="Bonus">💰 Bonus</option>
+                        <option value="Freelance">🧑‍💻 Freelance</option>
+                        <option value="Other">❓ Other</option>
+                    </select>
+                </div>
             </div>
             <button type="submit" class="btn btn-primary">Add Income</button>
         </form>
+
+        </div>
+    <!-- Expenses Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-danger text-white">
+            <h4 class="mb-0">Expenses</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for expense in month_expenses %}
+                <tr>
+                    <td>{{ expense.date.strftime('%b %d, %Y') }}</td>
+                    <td>{{ expense.description }}</td>
+                    <td>{{ category_emojis.get(expense.category, '') }} {{ expense.category }}</td>
+                    <td><span class="badge bg-danger">${{ expense.amount }}</span></td>
+                    <td class="text-end">
+                        <form action="{{ url_for('routes.delete_expense', id=expense.id) }}" method="POST"
+                              style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"
+                                    onclick="return confirm('Are you sure you want to delete this expense?')">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <p class="mt-2"><strong>Total Expenses:</strong> ${{ total_expenses }}</p>
+        </div>
     </div>
 
+    <!-- Income Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Income</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Source</th>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for income in month_income %}
+                <tr>
+                    <td>{{ income.date.strftime('%b %d, %Y') }}</td>
+                    <td>{{ income.source }}</td>
+                    <td>{{ category_emojis.get(income.category, '') }} {{ income.category }}</td>
+                    <td><span class="badge bg-success">${{ income.amount }}</span></td>
+                    <td class="text-end">
+                        <form action="{{ url_for('routes.delete_income', id=income.id) }}" method="POST"
+                              style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"
+                                    onclick="return confirm('Are you sure you want to delete this income?')">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
 
-<!-- Expenses Section -->
-<div class="card mb-4">
-    <div class="card-header bg-danger text-white">
-        <h4 class="mb-0">Expenses</h4>
+            <!-- Totals -->
+            <p class="mt-2"><strong>Total Income:</strong> ${{ total_income }}</p>
+            <h4 class="text-end text-primary">Balance: ${{ balance }}</h4>
+        </div>
     </div>
-    <div class="card-body">
-        <table class="table table-striped table-hover">
-            <thead>
-            <tr>
-                <th>Date</th>
-                <th>Description</th>
-                <th>Amount</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for expense in month_expenses %}
-            <tr>
-                <td>{{ expense.date.strftime('%b %d, %Y') }}</td>
-                <td>{{ expense.description }}</td>
-                <td><span class="badge bg-danger">${{ expense.amount }}</span></td>
-                <td class="text-end">
-                    <form action="{{ url_for('routes.delete_expense', id=expense.id) }}" method="POST"
-                          style="display:inline;">
-                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"
-                                onclick="return confirm('Are you sure you want to delete this expense?')">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        <p class="mt-2"><strong>Total Expenses:</strong> ${{ total_expenses }}</p>
-    </div>
-</div>
 
-<!-- Income Section -->
-<div class="card mb-4">
-    <div class="card-header bg-success text-white">
-        <h4 class="mb-0">Income</h4>
+    <!-- Chart Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h4 class="mb-0">Revenue Chart</h4>
+        </div>
+        <div class="card-body text-center">
+            <!-- Placeholder for future chart -->
+            <div class="p-5 border border-info rounded">
+                <i class="fas fa-chart-pie fa-3x text-info mb-3"></i>
+                <p class="text-muted mb-0">Chart feature coming soon...</p>
+            </div>
+        </div>
     </div>
-    <div class="card-body">
-        <table class="table table-striped table-hover">
-            <thead>
-            <tr>
-                <th>Date</th>
-                <th>Source</th>
-                <th>Amount</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for income in month_income %}
-            <tr>
-                <td>{{ income.date.strftime('%b %d, %Y') }}</td>
-                <td>{{ income.source }}</td>
-                <td><span class="badge bg-success">${{ income.amount }}</span></td>
-                <td class="text-end">
-                    <form action="{{ url_for('routes.delete_income', id=income.id) }}" method="POST"
-                          style="display:inline;">
-                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"
-                                onclick="return confirm('Are you sure you want to delete this income?')">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-
-        <!-- Totals -->
-        <p class="mt-2"><strong>Total Income:</strong> ${{ total_income }}</p>
-        <h4 class="text-end text-primary">Balance: ${{ balance }}</h4>
-    </div>
-</div>
-
-<!-- Chart Section -->
-<div class="card mb-4">
-  <div class="card-header bg-info text-white">
-    <h4 class="mb-0">Revenue Chart</h4>
-  </div>
-  <div class="card-body text-center">
-    <!-- Placeholder for future chart -->
-    <div class="p-5 border border-info rounded">
-      <i class="fas fa-chart-pie fa-3x text-info mb-3"></i>
-      <p class="text-muted mb-0">Chart feature coming soon...</p>
-    </div>
-  </div>
-</div>
 </main>
 <footer>
     <p>&copy; 2025 Budget Tracker</p>
