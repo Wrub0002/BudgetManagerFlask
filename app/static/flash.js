@@ -30,3 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+ document.querySelector("form").addEventListener("submit", function () {
+    const usernameInput = document.querySelector("#username");
+    usernameInput.value = usernameInput.value.trim();
+  });
+

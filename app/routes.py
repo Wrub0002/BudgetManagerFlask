@@ -27,13 +27,12 @@ def delete_income(id):
 @login_required
 def homepage():
 
-
     # receive month and year from the request
     month = request.args.get("month", default=datetime.now().month, type=int)
     year = request.args.get("year", default=datetime.now().year, type=int)
 
     # Validate month and year
-    if month < 1 or month > 12:
+    if month < 1:
         month = 12
         year -= 1
     elif month > 12:

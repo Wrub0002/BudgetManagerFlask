@@ -14,7 +14,7 @@ def login():
     errors = {}
 
     if request.method == "POST":
-        username = request.form["username"]
+        username = request.form["username"].strip()
         password = request.form["password"]
 
         user = User.query.filter_by(username=username).first()
