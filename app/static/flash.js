@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Automatically removes flash messages after a certain timeout
+  // === Auto-hide flash messages after a delay ===
   const alerts = document.querySelectorAll(".alert");
   if (alerts.length > 0) {
     setTimeout(() => {
@@ -8,10 +8,10 @@ document.addEventListener("DOMContentLoaded", function () {
         alert.classList.add("fade");
         setTimeout(() => alert.remove(), 500);
       });
-    }, 3000); // 3 seconds
+    }, 3000);
   }
 
-  // Toggles the visibility of the password input field
+  // === Toggle visibility of password field ===
   const togglePassword = document.getElementById("togglePassword");
   const passwordInput = document.getElementById("password");
   const toggleIcon = document.getElementById("togglePasswordIcon");
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Trims whitespace from the username input on form submission
+  // === Trim whitespace from username input before form submission ===
   const form = document.querySelector("form");
   if (form) {
     form.addEventListener("submit", function () {
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Initializes the income/expense chart
+  // === Render the income/expense chart using Chart.js ===
   const ctx = document.getElementById("incomeExpenseChart");
   if (ctx) {
     const backgroundColors = [
@@ -51,6 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "#FDCB6E", // Other
     ];
 
+    // Labels and values are injected as data-* attributes for flexibility
     const labels = JSON.parse(ctx.dataset.labels);
     const values = JSON.parse(ctx.dataset.values);
 
