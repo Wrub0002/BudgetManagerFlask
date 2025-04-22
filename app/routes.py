@@ -2,9 +2,9 @@ from flask import Blueprint, request, render_template, redirect, flash
 from app import db
 from app.models import Expense, Income
 from datetime import datetime
-from sqlalchemy import extract
+from sqlalchemy import extract, func
 from flask_login import login_required, current_user
-
+from collections import  defaultdict
 
 # Create a Blueprint for the routes
 routes = Blueprint("routes", __name__)
@@ -96,8 +96,17 @@ def homepage():
     total_expenses = sum(e.amount for e in month_expenses)
     balance = total_income - total_expenses
 
+    expense_data = db.session.query(
+        Expense.category,
+        func.sum(Expense.amount)
+    ).filter_by(user_id=current_user.id).filter(
+        extract('month', Expense.date) == month,
+        extract('year', Expense.date) == year
+    ).group_by(Expense.category).all()
 
+    expense_labels = [category for category, _ in expense_data]
+    expense_values = [float(amount) for _, amount in expense_data]
 
     return render_template("index.html",total_income=total_income, total_expenses=total_expenses, balance=balance
                            , month_expenses=month_expenses, month_income=month_income, selected_month=month, selected_year=year, selected_month_name=datetime(year, month, 1).strftime("%B"),
-                           current_user=current_user, category_emojis= category_emojis)
+                           current_user=current_user, category_emojis= category_emojis,  expense_labels=expense_labels, expense_values=expense_values)
