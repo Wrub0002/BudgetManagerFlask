@@ -36,46 +36,142 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // === Render the income/expense chart using Chart.js ===
-  const ctx = document.getElementById("incomeExpenseChart");
-  if (ctx) {
-    const backgroundColors = [
-      "#FF6B6B", // Food
-      "#4D96FF", // Transport
-      "#6C5CE7", // Housing
-      "#FFA630", // Entertainment
-      "#2ED573", // Healthcare
-      "#5F27CD", // Clothing
-      "#1E90FF", // Education
-      "#636E72", // Subscriptions
-      "#FDCB6E", // Other
-    ];
+  // === Main Chart Logic with Category Colors ===
+ // === Render the main chart using Chart.js ===
+const ctx = document.getElementById("mainChart");
+if (ctx) {
+  const chartSelector = document.getElementById("chartSelector");
 
-    // Labels and values are injected as data-* attributes for flexibility
-    const labels = JSON.parse(ctx.dataset.labels);
-    const values = JSON.parse(ctx.dataset.values);
+  const categoryColorMap = {
+    Food: "#FF6B6B",
+    Transport: "#4D96FF",
+    Housing: "#6C5CE7",
+    Entertainment: "#FFA630",
+    Healthcare: "#2ED573",
+    Clothing: "#5F27CD",
+    Education: "#1E90FF",
+    Subscriptions: "#636E72",
+    Other: "#FDCB6E",
+    Salary: "#A29BFE",
+    Investment: "#74B9FF",
+    Gift: "#FF7675",
+    "Side Job": "#55EFC4",
+    Rental: "#81ECEC",
+    Interest: "#FAB1A0",
+    Dividends: "#E17055",
+    Bonus: "#FD79A8",
+    Freelance: "#00CEC9"
+  };
 
-    const chart = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: "Expenses",
-            backgroundColor: backgroundColors.slice(0, labels.length),
-            data: values,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          title: {
-            display: true,
-            text: "Expenses by Category",
-          },
+  const generateColors = (labels) => {
+    return labels.map(label => categoryColorMap[label] || "#CCCCCC");
+  };
+
+  const dataSets = {
+    expenses: {
+      labels: chartData.expenses.labels,
+      data: chartData.expenses.values,
+      label: "Expenses",
+      get bgColor() {
+        return generateColors(this.labels);
+      }
+    },
+    income: {
+      labels: chartData.income.labels,
+      data: chartData.income.values,
+      label: "Income",
+      get bgColor() {
+        return generateColors(this.labels);
+      }
+    },
+    totals: {
+      labels: ["Income", "Expenses"],
+      datasets: [
+        {
+          label: "Income",
+          data: [chartData.totals.values[0], 0],
+          backgroundColor: "rgba(75, 192, 192, 0.5)"
         },
+        {
+          label: "Expenses",
+          data: [0, chartData.totals.values[1]],
+          backgroundColor: "rgba(255, 99, 132, 0.5)"
+        }
+      ]
+    }
+  };
+
+  let chart = new Chart(ctx.getContext("2d"), {
+    type: "bar",
+    data: {
+      labels: dataSets.expenses.labels,
+      datasets: [
+        {
+          label: dataSets.expenses.label,
+          data: dataSets.expenses.data,
+          backgroundColor: dataSets.expenses.bgColor,
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: "Total Income vs Expenses"
+        },
+        legend: {
+          labels: {
+            usePointStyle: true
+          }
+        }
       },
-    });
-  }
+      scales: {
+        x: {
+          stacked: true,
+          ticks: {
+            align: "center"
+          }
+        },
+        y: {
+          stacked: true,
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  function updateChart(type) {
+  const selectedData = dataSets[type];
+  chart.data.labels = selectedData.labels;
+    chart.data.labels = selectedData.labels;
+
+    if (type === "totals") {
+      chart.data.datasets = selectedData.datasets;
+    } else {
+      chart.data.datasets = [{
+        label: selectedData.label,
+        data: selectedData.data,
+        backgroundColor: typeof selectedData.bgColor === "function"
+          ? selectedData.bgColor()
+          : selectedData.bgColor
+      }];
+    }
+
+
+  chart.options.plugins.title.text =
+    chartSelector.options[chartSelector.selectedIndex].text;
+
+  // 👇 Mostrar legenda só para o gráfico de comparação total
+  chart.options.plugins.legend.display = type === "totals";
+
+  chart.update();
+}
+
+
+  chartSelector.addEventListener("change", function () {
+    updateChart(this.value);
+  });
+}
 });

@@ -3,7 +3,7 @@ from app import db
 from app.models import Expense, Income
 from datetime import datetime
 from flask_login import login_required, current_user
-from app.services import get_selected_month_year, handle_form_submission, get_monthly_transactions, calculate_summary, get_expense_chart_data
+from app.services import get_selected_month_year, handle_form_submission, get_monthly_transactions, calculate_summary, get_expense_chart_data, get_income_chart_data, get_total_comparison_data
 
 # Create a Blueprint for the routes
 routes = Blueprint("routes", __name__)
@@ -44,6 +44,9 @@ def homepage():
         "Bonus": "💰", "Freelance": "🧑‍💻"
     }
 
+    income_labels, income_values = get_income_chart_data(current_user.id, month, year)
+    total_labels, total_values = get_total_comparison_data(current_user.id, month, year)
+
     return render_template("index.html",
         total_income=total_income,
         total_expenses=total_expenses,
@@ -56,5 +59,9 @@ def homepage():
         current_user=current_user,
         category_emojis=category_emojis,
         expense_labels=expense_labels,
-        expense_values=expense_values
+        expense_values=expense_values,
+        income_labels=income_labels,
+        income_values=income_values,
+                           total_labels=total_labels,
+                           total_values=total_values
     )
