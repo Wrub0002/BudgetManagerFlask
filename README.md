@@ -116,7 +116,7 @@ pip install -r requirements.txt
 FLASK_APP=app.py
 FLASK_ENV=development
 SECRET_KEY=your_secret_key
-SQLALCHEMY_DATABASE_URI=sqlite:///instance/budget.db
+SQLALCHEMY_DATABASE_URI=sqlite:///budget.db
 SQLALCHEMY_TRACK_MODIFICATIONS=False
 ```
 5. Run the app
