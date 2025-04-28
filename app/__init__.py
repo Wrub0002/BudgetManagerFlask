@@ -38,6 +38,10 @@ def create_app():
         """Load user by ID for session management."""
         return User.query.get(int(user_id))
 
+    # Create database tables
+    with app.app_context():
+        db.create_all()
+
     # Register Blueprints
     from app.routes import routes
     from app.auth import auth
