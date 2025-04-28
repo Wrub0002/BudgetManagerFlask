@@ -1,5 +1,4 @@
 import re
-from dbm import error
 
 from flask import Blueprint, request, render_template, redirect, url_for, flash
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -7,7 +6,7 @@ from flask_login import login_user, logout_user
 from app import db
 from app.models import User
 
-auth = Blueprint("auth", __name__)
+auth = Blueprint("auth", __name__, template_folder="templates")
 
 @auth.route("/login", methods=["GET", "POST"])
 def login():
