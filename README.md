@@ -4,7 +4,7 @@ An intuitive, personal finance tracker built with Flask to help you manage month
 ## 🧬 Technology Stack
 Frontend:
 
-- HTML, CSS, Bootstrap ,Chart.js
+- HTML, CSS, Bootstrap , Chart.js
 
 Backend:
 
@@ -12,8 +12,7 @@ Backend:
 
 Other Tools:
 
-- Jinja2 (Template Engine)
-, Flask-Login (Authentication) , Werkzeug Security (Password Hashing) , python-dotenv (Environment Variables Management)
+- Jinja2 (Template Engine), Flask-Login (Authentication), Werkzeug Security (Password Hashing), python-dotenv (Environment Variables Management)
 
 ## 📄 Table of Contents
 
@@ -133,10 +132,6 @@ flask run
 3. Dashboard:
 ![img_2.png](app/static/images/img_2.png)
 ![img_3.png](app/static/images/img_3.png)
-
-
-
-
 
 ## 📆 License
 
