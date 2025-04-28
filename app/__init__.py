@@ -10,7 +10,12 @@ db = SQLAlchemy()
 login_manager = LoginManager()
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, instance_relative_config=True)
+    try:
+        os.makedirs(app.instance_path)
+    except OSError:
+        pass
+
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS') == 'True'
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
