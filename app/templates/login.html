@@ -31,7 +31,7 @@
                     <span class="input-group-text"><i class="fa fa-user"></i></span>
                     <input type="text" name="username" id="username"
                            class="form-control {% if errors.username %}is-invalid{% endif %}"
-                           value="{{ username or '' }} " required autofocus>
+                           value="{{ username or '' }} " >
                     {% if errors.username %}
                     <div class="invalid-feedback">
                         {{ errors.username }}
